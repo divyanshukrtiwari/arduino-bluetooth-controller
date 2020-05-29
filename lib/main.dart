@@ -9,6 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -35,7 +36,7 @@ class _HomeState extends State<Home> {
   bool _pressed = false;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     bluetoothConnectoinState();
   }
@@ -78,6 +79,67 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Arduino Controller"),
+        elevation: 2,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Container(
+              child: Row(
+                children: <Widget>[
+                  Text('Devices'),
+                  DropdownButton(
+                    items: null, //to be added _getDeviceList()
+                    onChanged: (val) => setState(() => _device = val),
+                    value: _device,
+                  ),
+                  FlatButton(
+                    onPressed:
+                        null, //_pressed ? null : _connected ? _disconnect : _connect,
+                    child: Text(_connected ? 'Disconnect' : 'Connect'),
+                  )
+                ],
+              ),
+            ),
+            Card(
+              elevation: 1,
+              child: Row(
+                children: <Widget>[
+                  Text('Devicce 1'),
+                  FlatButton(
+                    onPressed:
+                        null, //_connected ? _sendOnMessageToBluetooth : null,
+                    child: Text('On'),
+                  ),
+                  FlatButton(
+                    onPressed:
+                        null, //_connected ? _sendOffMessageToBluetooth : null,
+                    child: Text("OFF"),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+                child: Center(
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    'NOTE: If the device is not listed above'
+                    'open settings and pair the device',
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      color: Colors.black38,
+                    ),
+                  ),
+                ],
+              ),
+            )),
+          ],
+        ),
+      ),
+    );
   }
 }
