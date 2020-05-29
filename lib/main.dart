@@ -114,6 +114,33 @@ class _HomeState extends State<Home> {
       }
     }
 
+    void _disconnect() {
+      bluetooth.disconnect();
+      setState(() => _pressed = true);
+    }
+
+    void _sendOnMessageToBluetooth() {
+      bluetooth.isConnected.then(
+        (isConnected) {
+          if (isConnected) {
+            bluetooth.write("1");
+            SnackBar(content: Text('Device Turned On'));
+          }
+        },
+      );
+    }
+
+    void _sendOffMessageToBluetooth() {
+      bluetooth.isConnected.then(
+        (isConnected) {
+          if (isConnected) {
+            bluetooth.write("0");
+            SnackBar(content: Text('Device Turned Off'));
+          }
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Arduino Controller"),
