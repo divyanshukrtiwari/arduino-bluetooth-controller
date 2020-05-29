@@ -79,6 +79,41 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    List<DropdownMenuItem<BluetoothDevice>> _getDeviceList() {
+      List<DropdownMenuItem<BluetoothDevice>> items = [];
+      if (_devicesList.isEmpty) {
+        items.add(DropdownMenuItem(
+          child: Text('NONE'),
+        ));
+      } else {
+        _devicesList.forEach((device) {
+          items.add(DropdownMenuItem(
+            child: Text(device.name),
+            value: device,
+          ));
+        });
+      }
+      return items;
+    }
+
+    void _connect() {
+      if (_device == null) {
+        SnackBar(content: Text('No Device Selected'));
+      } else {
+        bluetooth.isConnected.then((isConnected) {
+          if (!isConnected) {
+            bluetooth
+                .connect(_device)
+                .timeout(Duration(seconds: 10))
+                .catchError((error) {
+              setState(() => _pressed = false);
+            });
+            setState(() => _pressed = true);
+          }
+        });
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Arduino Controller"),
@@ -108,7 +143,7 @@ class _HomeState extends State<Home> {
               elevation: 1,
               child: Row(
                 children: <Widget>[
-                  Text('Devicce 1'),
+                  Text('Device 1'),
                   FlatButton(
                     onPressed:
                         null, //_connected ? _sendOnMessageToBluetooth : null,
