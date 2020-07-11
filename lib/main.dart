@@ -17,7 +17,18 @@ class MyApp extends StatelessWidget {
         textTheme: TextTheme(
           bodyText2: TextStyle(color: Colors.grey.shade600),
         ),
-        
+        appBarTheme: AppBarTheme(
+          color: Colors.grey.shade100,
+          elevation: 1,
+          actionsIconTheme: IconThemeData(color: Colors.grey.shade600),
+          textTheme: TextTheme(
+            headline6: TextStyle(
+              color: Colors.grey.shade700,
+              fontSize: 26,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
       ),
       home: HomeScreen(),
     );
