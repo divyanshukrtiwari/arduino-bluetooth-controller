@@ -178,11 +178,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     void _sendMessage(String val) async {
-    bluetoothConnection.output.add(utf8.encode("$val" + "\r\n"));
-    await bluetoothConnection.output.allSent;
-    show('Device Turned On');
-    
-  }
+      bluetoothConnection.output.add(utf8.encode("$val" + "\r\n"));
+      await bluetoothConnection.output.allSent;
+      show('Device Turned On');
+    }
 
     return Scaffold(
       key: _scaffoldKey,
@@ -235,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            //SizedBox(height: 20,),
+            SizedBox(height: 20,),
             Container(
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Row(
@@ -251,6 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     items: _getDeviceItems(),
                     onChanged: (value) => setState(() => _device = value),
                     value: _device,
+                    elevation: 8,
                   ),
                   FlatButton(
                     splashColor: Colors.cyan,
@@ -258,55 +258,103 @@ class _HomeScreenState extends State<HomeScreen> {
                         ? null
                         : _connected ? _disconnect : _connect,
                     child: Text(_connected ? 'Disconnect' : 'Connect'),
-                  )
+                  ),
                 ],
               ),
             ),
+            SizedBox(height: 50,),
             Container(
-              margin: EdgeInsets.only(top: 25),
+              margin: EdgeInsets.only(top: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   InkWell(
-                    child: Container(
-                      height: size.height * 0.07,
-                      width: size.width * 0.24,
-                      child: Center(
-                        child: Text(
-                          'Open',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      decoration: invertedbox,
-                    ),
+                    child: openCloseBtn(size, 'Open'),
                     onTap: () => _sendMessage('1'),
                   ),
                   InkWell(
-                    child: Container(
-                      height: size.height * 0.07,
-                      width: size.width * 0.24,
-                      child: Center(
-                        child: Text(
-                          'Close',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      decoration: invertedbox,
-                    ),
+                    child: openCloseBtn(size, 'Close'),
                     onTap: () => _sendMessage('2'),
                   ),
                 ],
               ),
             ),
+            SizedBox(height: 50,),
+            Container(
+              padding: EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  InkWell(
+                    child: timerBtn(size, '30 Sec'),
+                    onTap: () => _sendMessage('3'),
+                  ),
+                  InkWell(
+                    child: timerBtn(size, '1 min'),
+                    onTap: () => _sendMessage('4'),
+                  ),InkWell(
+                    child: timerBtn(size, '2 min'),
+                    onTap: () => _sendMessage('5'),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  InkWell(
+                    child: timerBtn(size, '3 min'),
+                    onTap: () => _sendMessage('6'),
+                  ),
+                  InkWell(
+                    child: timerBtn(size, '4 min'),
+                    onTap: () => _sendMessage('7'),
+                  ),InkWell(
+                    child: timerBtn(size, '5 min'),
+                    onTap: () => _sendMessage('8'),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),
+    );
+  }
+
+  Widget openCloseBtn(Size size, val) {
+    return Container(
+      height: size.height * 0.07,
+      width: size.width * 0.24,
+      child: Center(
+        child: Text(
+          '$val',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      decoration: invertedbox,
+    );
+  }
+
+  Widget timerBtn(Size size, val) {
+    return Container(
+      height: size.height * 0.1,
+      width: size.height * 0.1,
+      child: Center(
+        child: Text(
+          '$val',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      decoration: box,
     );
   }
 }
