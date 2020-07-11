@@ -142,6 +142,7 @@ class _HomeState extends State<Home> {
     }
 
     return Scaffold(
+      key: _key,
       appBar: AppBar(
         title: Text("Arduino Controller"),
         elevation: 2,
@@ -149,39 +150,46 @@ class _HomeState extends State<Home> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Container(
-              child: Row(
-                children: <Widget>[
-                  Text('Devices'),
-                  DropdownButton(
-                    items: null, //to be added _getDeviceList()
-                    onChanged: (val) => setState(() => _device = val),
-                    value: _device,
-                  ),
-                  FlatButton(
-                    onPressed:
-                        null, //_pressed ? null : _connected ? _disconnect : _connect,
-                    child: Text(_connected ? 'Disconnect' : 'Connect'),
-                  )
-                ],
-              ),
-            ),
             Card(
               elevation: 1,
-              child: Row(
-                children: <Widget>[
-                  Text('Device 1'),
-                  FlatButton(
-                    onPressed:
-                        null, //_connected ? _sendOnMessageToBluetooth : null,
-                    child: Text('On'),
-                  ),
-                  FlatButton(
-                    onPressed:
-                        null, //_connected ? _sendOffMessageToBluetooth : null,
-                    child: Text("OFF"),
-                  ),
-                ],
+              child: SizedBox(
+                height: 100,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text('Devices'),
+                    DropdownButton(
+                      items: _getDeviceList(),
+                      onChanged: (val) => setState(() => _device = val),
+                      value: _device,
+                    ),
+                    FlatButton(
+                      onPressed:
+                          _pressed ? null : _connected ? _disconnect : _connect,
+                      child: Text(_connected ? 'Disconnect' : 'Connect'),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 100,
+              child: Card(
+                elevation: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text('Device 1'),
+                    FlatButton(
+                      onPressed: _connected ? _sendOnMessageToBluetooth : null,
+                      child: Text('On'),
+                    ),
+                    FlatButton(
+                      onPressed: _connected ? _sendOffMessageToBluetooth : null,
+                      child: Text("OFF"),
+                    ),
+                  ],
+                ),
               ),
             ),
             Container(
@@ -189,7 +197,7 @@ class _HomeState extends State<Home> {
               child: Column(
                 children: <Widget>[
                   Text(
-                    'NOTE: If the device is not listed above'
+                    'NOTE: If the device is not listed above '
                     'open settings and pair the device',
                     style: TextStyle(
                       fontStyle: FontStyle.italic,
