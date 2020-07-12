@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         duration: duration,
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.cyan,
+        backgroundColor: Theme.of(context).primaryColor,
       ),
     );
   }
@@ -266,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     elevation: 8,
                   ),
                   FlatButton(
-                    splashColor: Colors.cyan,
+                    splashColor: theme.primaryColor,
                     onPressed: _connected ? _disconnect : _connect,
                     child: Text(_connected ? 'Disconnect' : 'Connect'),
                   ),
@@ -349,7 +349,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Text(
           '$val',
           style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.cyan),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).primaryColor),
         ),
       ),
       decoration: invertedbox,

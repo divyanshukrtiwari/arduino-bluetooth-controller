@@ -22,16 +22,28 @@ class SplashScreen extends StatelessWidget {
             ],
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: 60),
-            buildRow('assets/images/nitr.png',
-                'NATIONAL INSTITUTE OF TECHNOLOGY, RAIPUR'),
-            sizedBox('AND'),
-            buildRow('assets/images/img1.jpg', 'AAYUSHMAN SOLUTIONS'),
-            sizedBox('PRESENTS'),
-          ],
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              buildRow('assets/images/nitr.png',
+                  'NATIONAL INSTITUTE OF TECHNOLOGY, RAIPUR'),
+              sizedBox('AND'),
+              buildRow('assets/images/img1.jpg', 'AAYUSHMAN SOLUTIONS'),
+              sizedBox('PRESENTS'),
+              Container(
+                height: 150,
+                width: 250,
+                margin: EdgeInsets.symmetric(vertical:50),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.grey
+                ),
+              ),
+              sizedBox('LOREM IPSUM')
+            ],
+          ),
         ),
       ),
     );

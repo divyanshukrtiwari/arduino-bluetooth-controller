@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
           bodyText2: TextStyle(color: Colors.grey.shade700),
         ),
       ),
-      home: SplashScreen(),
+      home: HomeScreen(),
     );
   }
 }
