@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
-import 'helper.dart';
+import '../helper.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isDeviceListAvailable = false;
   bool isDisconnecting = false;
   bool get isConnected {
-    return bluetoothConnection.isConnected;
+    return bluetoothConnection != null && bluetoothConnection.isConnected;
   }
 
   List<BluetoothDevice> _deviceList = [];
@@ -88,100 +89,104 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future show(
+    String message, {
+    Duration duration: const Duration(seconds: 3),
+  }) async {
+    await new Future.delayed(new Duration(milliseconds: 100));
+    _scaffoldKey.currentState.showSnackBar(
+      new SnackBar(
+        content: new Text(
+          message,
+          textAlign: TextAlign.center,
+        ),
+        duration: duration,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.cyan,
+      ),
+    );
+  }
+
+  void _connect() async {
+    if (_device == null) {
+      show('No device selected');
+    } else {
+      if (!isConnected) {
+        await BluetoothConnection.toAddress(_device.address)
+            .then((_connection) {
+          print('Connected to the device');
+          bluetoothConnection = _connection;
+          setState(() {
+            _connected = true;
+          });
+
+          bluetoothConnection.input.listen(null).onDone(() {
+            if (isDisconnecting) {
+              print('Disconnecting locally!');
+            } else {
+              print('Disconnected remotely!');
+            }
+            if (this.mounted) {
+              setState(() {});
+            }
+          });
+        }).catchError((error) {
+          print('Cannot connect, exception occurred');
+          print(error);
+        });
+        show('Device connected');
+
+        setState(() {
+          _connected = true;
+          _isDeviceListAvailable = true;
+        });
+      }
+    }
+  }
+
+  void _disconnect() async {
+    // setState(() {
+    //   _isDeviceListAvailable = true;
+    // });
+
+    await bluetoothConnection.close();
+    show('Device disconnected');
+    if (!bluetoothConnection.isConnected) {
+      setState(() {
+        _connected = false;
+        _isDeviceListAvailable = true;
+      });
+    }
+  }
+
+  void _sendMessage(String val) async {
+    show('Opening tray');
+    bluetoothConnection.output.add(utf8.encode("$val" + "\r\n"));
+
+    await bluetoothConnection.output.allSent;
+  }
+
+  List<DropdownMenuItem<BluetoothDevice>> _getDeviceItems() {
+    List<DropdownMenuItem<BluetoothDevice>> items = [];
+    if (_deviceList.isEmpty) {
+      items.add(DropdownMenuItem(
+        child: Text('NONE'),
+      ));
+    } else {
+      _deviceList.forEach((device) {
+        items.add(DropdownMenuItem(
+          child: Text(device.name),
+          value: device,
+        ));
+      });
+    }
+    return items;
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
-
-    Future show(
-      String message, {
-      Duration duration: const Duration(seconds: 3),
-    }) async {
-      await new Future.delayed(new Duration(milliseconds: 100));
-      _scaffoldKey.currentState.showSnackBar(
-        new SnackBar(
-          content: new Text(
-            message,
-          ),
-          duration: duration,
-        ),
-      );
-    }
-
-    List<DropdownMenuItem<BluetoothDevice>> _getDeviceItems() {
-      List<DropdownMenuItem<BluetoothDevice>> items = [];
-      if (_deviceList.isEmpty) {
-        items.add(DropdownMenuItem(
-          child: Text('NONE'),
-        ));
-      } else {
-        _deviceList.forEach((device) {
-          items.add(DropdownMenuItem(
-            child: Text(device.name),
-            value: device,
-          ));
-        });
-      }
-      return items;
-    }
-
-    void _connect() async {
-      setState(() {
-        _isDeviceListAvailable = true;
-      });
-      if (_device == null) {
-        show('No device selected');
-      } else {
-        if (!isConnected) {
-          await BluetoothConnection.toAddress(_device.address)
-              .then((_connection) {
-            print('Connected to the device');
-            bluetoothConnection = _connection;
-            setState(() {
-              _connected = true;
-            });
-
-            bluetoothConnection.input.listen(null).onDone(() {
-              if (isDisconnecting) {
-                print('Disconnecting locally!');
-              } else {
-                print('Disconnected remotely!');
-              }
-              if (this.mounted) {
-                setState(() {});
-              }
-            });
-          }).catchError((error) {
-            print('Cannot connect, exception occurred');
-            print(error);
-          });
-          show('Device connected');
-
-          setState(() => _isDeviceListAvailable = false);
-        }
-      }
-    }
-
-    void _disconnect() async {
-      setState(() {
-        _isDeviceListAvailable = true;
-      });
-
-      await bluetoothConnection.close();
-      show('Device disconnected');
-      if (!bluetoothConnection.isConnected) {
-        setState(() {
-          _connected = false;
-          _isDeviceListAvailable = false;
-        });
-      }
-    }
-
-    void _sendMessage(String val) async {
-      bluetoothConnection.output.add(utf8.encode("$val" + "\r\n"));
-      await bluetoothConnection.output.allSent;
-      show('Device Turned On');
-    }
 
     return Scaffold(
       key: _scaffoldKey,
@@ -189,13 +194,19 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Terminator Helper'),
         actions: <Widget>[
           IconButton(icon: Icon(Icons.info), onPressed: () {}),
-          IconButton(icon: Icon(Icons.refresh), onPressed: () {}),
+          IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () async {
+                await getPairedDevices().then(
+                  (value) => show('Device list updated'),
+                );
+              }),
         ],
       ),
       body: Container(
         height: size.height,
         width: size.width,
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(12),
         child: Column(
           children: <Widget>[
             Container(
@@ -234,7 +245,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
             Container(
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Row(
@@ -254,15 +267,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   FlatButton(
                     splashColor: Colors.cyan,
-                    onPressed: _isDeviceListAvailable
-                        ? null
-                        : _connected ? _disconnect : _connect,
+                    onPressed: _connected ? _disconnect : _connect,
                     child: Text(_connected ? 'Disconnect' : 'Connect'),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 50,),
+            SizedBox(
+              height: 50,
+            ),
             Container(
               margin: EdgeInsets.only(top: 20),
               child: Row(
@@ -279,7 +292,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 50,),
+            SizedBox(
+              height: 50,
+            ),
             Container(
               padding: EdgeInsets.all(20),
               child: Row(
@@ -292,7 +307,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   InkWell(
                     child: timerBtn(size, '1 min'),
                     onTap: () => _sendMessage('4'),
-                  ),InkWell(
+                  ),
+                  InkWell(
                     child: timerBtn(size, '2 min'),
                     onTap: () => _sendMessage('5'),
                   )
@@ -311,7 +327,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   InkWell(
                     child: timerBtn(size, '4 min'),
                     onTap: () => _sendMessage('7'),
-                  ),InkWell(
+                  ),
+                  InkWell(
                     child: timerBtn(size, '5 min'),
                     onTap: () => _sendMessage('8'),
                   )
@@ -332,9 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Text(
           '$val',
           style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.cyan),
         ),
       ),
       decoration: invertedbox,
@@ -354,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      decoration: box,
+      decoration: circle,
     );
   }
 }

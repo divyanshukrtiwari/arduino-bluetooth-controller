@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-BoxDecoration box = BoxDecoration(
+BoxDecoration circle = BoxDecoration(
   shape: BoxShape.circle,
   color: Colors.grey.shade100,
   boxShadow: [
