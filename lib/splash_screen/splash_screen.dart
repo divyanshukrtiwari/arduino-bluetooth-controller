@@ -1,9 +1,20 @@
+import 'dart:async';
+
+import 'package:arduino_controller/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
+    Timer(
+        Duration(seconds: 5),
+        () => Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => HomeScreen(),
+              ),
+            ));
 
     return Scaffold(
       body: Container(
@@ -27,21 +38,26 @@ class SplashScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              buildRow('assets/images/nitr.png',
-                  'NATIONAL INSTITUTE OF TECHNOLOGY, RAIPUR'),
-              sizedBox('AND'),
-              buildRow('assets/images/img1.jpg', 'AAYUSHMAN SOLUTIONS'),
-              sizedBox('PRESENTS'),
+              Center(
+                child: buildRow('assets/images/nitr.png',
+                    'NATIONAL INSTITUTE OF TECHNOLOGY, RAIPUR'),
+              ),
+              Center(child: sizedBox('AND', 18, 40)),
+              Center(child: buildRow('assets/images/img1.jpg', 'AAYUSHMAN SOLUTIONS')),
+              sizedBox('PRESENTS', 18, 40),
               Container(
-                height: 150,
-                width: 250,
-                margin: EdgeInsets.symmetric(vertical:50),
+                height: 160,
+                width: 280,
+                margin: EdgeInsets.symmetric(vertical: 50),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  color: Colors.grey
+                  color: Colors.grey,
+                  image: DecorationImage(
+                      image: AssetImage('assets/images/img2.jpg'),
+                      fit: BoxFit.cover),
                 ),
               ),
-              sizedBox('LOREM IPSUM')
+              sizedBox('CONTACTLESS UV DISINFECTING BOX', 22, 80),
             ],
           ),
         ),
@@ -49,14 +65,19 @@ class SplashScreen extends StatelessWidget {
     );
   }
 
-  Widget sizedBox(String text) {
+  Widget sizedBox(String text, double font, double height) {
     return SizedBox(
-      height: 40,
+      height: height,
       child: Padding(
         padding: const EdgeInsets.only(top: 15.0),
         child: Text(
           '$text',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: font,
+            fontWeight: FontWeight.bold,
+          ),
+          softWrap: true,
         ),
       ),
     );
@@ -64,7 +85,7 @@ class SplashScreen extends StatelessWidget {
 
   Widget buildRow(String path, String name) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         Container(
           height: 70,
@@ -76,13 +97,12 @@ class SplashScreen extends StatelessWidget {
           ),
         ),
         SizedBox(width: 15),
-        Expanded(
-          child: Text(
-            '$name',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
+        Text(
+          '$name',
+          softWrap: true,
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],

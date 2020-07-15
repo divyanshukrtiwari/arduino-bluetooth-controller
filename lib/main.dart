@@ -16,10 +16,10 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.white,
         fontFamily: 'Raleway',
         textTheme: TextTheme(
-          bodyText2: TextStyle(color: Colors.grey.shade700),
+          bodyText2: TextStyle(color: Colors.grey.shade600),
         ),
       ),
-      home: HomeScreen(),
+      home: SplashScreen(),
     );
   }
 }

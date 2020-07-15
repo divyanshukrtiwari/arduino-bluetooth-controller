@@ -48,6 +48,7 @@ flutter:
     - assets/
     - assets/images/img1.jpg
     - assets/images/nitr.png
+    - assets/images/img2.jpg
   
 
   # An image asset can refer to one or more resolution-specific "variants", see
